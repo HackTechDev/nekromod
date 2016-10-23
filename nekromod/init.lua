@@ -70,6 +70,18 @@ minetest.register_chatcommand("build", {
 			for i=0,heightPillar do
 				minetest.set_node({x=pos.x + 2, y=pos.y + i, z=pos.z }, {name="default:ice"})
 			end
+		-- /build sign
+		elseif structureName == "sign" then
+			minetest.set_node({x=pos.x    , y=pos.y, z=pos.z }, {name="default:ice"})
+			minetest.set_node({x=pos.x + 1, y=pos.y, z=pos.z }, {name="default:ice"})
+
+			minetest.set_node({x=pos.x + 2, y=pos.y, z=pos.z }, {name="signs:sign_yard"})
+
+			minetest.set_node({x=pos.x + 3   , y=pos.y, z=pos.z }, {name="default:ice"})
+			minetest.set_node({x=pos.x + 4, y=pos.y, z=pos.z }, {name="default:ice"})
+		-- /build switch
+		elseif structureName == "switch" then
+			minetest.set_node({x=pos.x + 2, y=pos.y, z=pos.z }, {name="mesecons_switch:mesecon_switch_off"})
 		else
 			return false, "No structure builded"
 		end
