@@ -70,15 +70,21 @@ minetest.register_chatcommand("build", {
 			for i=0,heightPillar do
 				minetest.set_node({x=pos.x + 2, y=pos.y + i, z=pos.z }, {name="default:ice"})
 			end
-		-- /build sign
-		elseif structureName == "sign" then
+
+		-- /build sign_yard
+		elseif structureName == "sign_yard" then
 			minetest.set_node({x=pos.x    , y=pos.y, z=pos.z }, {name="default:ice"})
 			minetest.set_node({x=pos.x + 1, y=pos.y, z=pos.z }, {name="default:ice"})
 
 			minetest.set_node({x=pos.x + 2, y=pos.y, z=pos.z }, {name="signs:sign_yard"})
+			local meta = minetest.get_meta({x=pos.x + 2, y=pos.y, z=pos.z })
+			meta:set_string("infotext", "Your Text Here")
+			meta:set_string("text", "My custom text")
+			signs_lib.update_sign({x=pos.x + 2, y=pos.y, z=pos.z })
 
 			minetest.set_node({x=pos.x + 3   , y=pos.y, z=pos.z }, {name="default:ice"})
 			minetest.set_node({x=pos.x + 4, y=pos.y, z=pos.z }, {name="default:ice"})
+
 		-- /build switch
 		elseif structureName == "switch" then
 			minetest.set_node({x=pos.x + 2, y=pos.y, z=pos.z }, {name="mesecons_switch:mesecon_switch_off"})
