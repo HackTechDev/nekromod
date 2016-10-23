@@ -12,4 +12,7 @@ Commands:
 /build < structure name > < structure parameter >  
 Example:  
 /build pillar 6  
-    
+   
+Mods:
+Mesecons: http://mesecons.net/  
+   
