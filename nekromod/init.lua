@@ -97,3 +97,40 @@ minetest.register_chatcommand("build", {
 		return true, fmt:format(args, pos.x, pos.y, pos.z)
 	end
 })
+
+
+-- Action on punch node
+
+minetest.register_on_punchnode(function(pos, node, puncher, pointed_thing)
+	if node.name == "default:brick" then
+		local puncher_name = puncher:get_player_name()
+		local mypos = minetest.pos_to_string(pos) -- Sets variable to (X,Y,Z.. where Y is up) 
+		minetest.chat_send_all(puncher_name .." is hitting me. I'm located at ".. mypos)		
+	end 
+	if node.name == "default:desert_stonebrick" then
+		local puncher_name = puncher:get_player_name()
+		minetest.chat_send_player(puncher_name, "That's got to hurt!!")
+	end
+end)
+
+--[[
+minetest.on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
+	print(dump(node))
+	local player_name = clicker:get_player_name()
+	local mypos = minetest.pos_to_string(pos)
+	minetest.chat_send_all(player_name )
+	if node.name == "mesecons_switch:mesecon_switch_off" then
+		local mypos = minetest.pos_to_string(pos)
+		minetest.chat_send_all(player_name .." is right-click on me. I'm located at ".. mypos)
+	end
+end
+]]
+--[[
+minetest.on_rightclick(function(pos, node, player, itemstack, pointed_thing)
+	if node.name == "default:brick" then
+		local player_name = player:get_player_name()
+		local mypos = minetest.pos_to_string(pos)
+		minetest.chat_send_all(player_name .." is right-click on me. I'm located at ".. mypos)
+	end
+end)
+]]
