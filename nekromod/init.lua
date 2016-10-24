@@ -78,11 +78,13 @@ minetest.register_chatcommand("build", {
 
 			minetest.set_node({x=pos.x + 2, y=pos.y, z=pos.z }, {name="signs:sign_yard"})
 			local meta = minetest.get_meta({x=pos.x + 2, y=pos.y, z=pos.z })
-			meta:set_string("infotext", "Your Text Here")
-			meta:set_string("text", "My custom text")
+			meta:set_string("infotext", "My custom text here")
+			meta:set_string("text", "My custom text here")
 			signs_lib.update_sign({x=pos.x + 2, y=pos.y, z=pos.z })
 
-			minetest.set_node({x=pos.x + 3   , y=pos.y, z=pos.z }, {name="default:ice"})
+			-- signs_lib.update_sign({x=pos.x + 2, y=pos.y, z=pos.z }, {text="Your Custom Text Here"})
+
+			minetest.set_node({x=pos.x + 3, y=pos.y, z=pos.z }, {name="default:ice"})
 			minetest.set_node({x=pos.x + 4, y=pos.y, z=pos.z }, {name="default:ice"})
 
 		-- /build switch
