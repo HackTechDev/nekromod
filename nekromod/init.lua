@@ -118,7 +118,7 @@ minetest.register_on_punchnode(function(pos, node, puncher, pointed_thing)
 	end
 end)
 
--- Use switch to on/off and use pick wood to change the value
+-- Use switch to on/off and use pick wood weapon to change the value
 minetest.register_tool("nekromod:pick_wood", {
     	description = "Wooden Pickaxe Weapon",
     	inventory_image = "default_tool_woodpick.png",
@@ -132,16 +132,25 @@ minetest.register_tool("nekromod:pick_wood", {
 			return itemstack
 		end
 
+		-- Player
+                --local player = minetest.get_player_by_name(user)
+                local playerPos = user:getpos()
+		minetest.chat_send_all("player; x=" .. playerPos.x .. " y=" .. playerPos.y .. " z=" .. playerPos.z)
+
+		-- Node
 		local meta = minetest.get_meta(pos)
-
 		local nodeName = minetest.get_node(pos).name
-
 		minetest.chat_send_all("on_use; x=" .. pos.x .. " y=" .. pos.y .. " z=" .. pos.z .. " name=" .. nodeName)
 
-		if nodeName  == "mesecons_switch:mesecon_switch_on" then
-			minetest.set_node({x=pos.x, y=pos.y, z=pos.z }, {name="mesecons_switch:mesecon_switch_off"})
-		else
-			minetest.set_node({x=pos.x, y=pos.y, z=pos.z }, {name="mesecons_switch:mesecon_switch_on"})
+		-- Check distance between player and node
+		if (playerPos.x > pos.x - 3  and playerPos.x < pos.x + 3) and
+		   (playerPos.y > pos.y - 3  and playerPos.y < pos.y + 3) and
+		   (playerPos.z > pos.z - 3  and playerPos.z < pos.z + 3) then
+			if nodeName  == "mesecons_switch:mesecon_switch_on" then
+				minetest.set_node({x=pos.x, y=pos.y, z=pos.z }, {name="mesecons_switch:mesecon_switch_off"})
+			else
+				minetest.set_node({x=pos.x, y=pos.y, z=pos.z }, {name="mesecons_switch:mesecon_switch_on"})
+			end
 		end
 
 		return itemstack
