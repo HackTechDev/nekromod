@@ -2,8 +2,9 @@ Minetest: NekroMod
 ==================
   
 By le Sanglier des Ardennes 
+ 
    
-Commands:  
+* Commands:  
   
 /whereis < player name >  
   
@@ -12,7 +13,8 @@ Commands:
 /build < structure name > < structure parameter >  
 Example:  
 /build pillar 6  
-   
-Mods:
+  
+ 
+* Mods:  
 Mesecons: http://mesecons.net/  
-   
+Signs lib: https://forum.minetest.net/viewtopic.php?t=13762    

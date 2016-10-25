@@ -82,14 +82,14 @@ minetest.register_chatcommand("build", {
 			meta:set_string("text", "My custom text here")
 			signs_lib.update_sign({x=pos.x + 2, y=pos.y, z=pos.z })
 
-			-- signs_lib.update_sign({x=pos.x + 2, y=pos.y, z=pos.z }, {text="Your Custom Text Here"})
-
 			minetest.set_node({x=pos.x + 3, y=pos.y, z=pos.z }, {name="default:ice"})
 			minetest.set_node({x=pos.x + 4, y=pos.y, z=pos.z }, {name="default:ice"})
 
 		-- /build switch
 		elseif structureName == "switch" then
 			minetest.set_node({x=pos.x + 2, y=pos.y, z=pos.z }, {name="mesecons_switch:mesecon_switch_off"})
+			minetest.chat_send_all("mesecons_switch:mesecon_switch_off; x=" .. pos.x + 2 .. " y=" .. pos.y .. " z=" .. pos.z)
+
 		else
 			return false, "No structure builded"
 		end
@@ -111,26 +111,52 @@ minetest.register_on_punchnode(function(pos, node, puncher, pointed_thing)
 		local puncher_name = puncher:get_player_name()
 		minetest.chat_send_player(puncher_name, "That's got to hurt!!")
 	end
+	if node.name == "mesecons_switch:mesecon_switch_off" then
+		local puncher_name = puncher:get_player_name()
+		local mypos = minetest.pos_to_string(pos)
+		minetest.chat_send_all(puncher_name .." switch: ".. mypos)
+	end
 end)
 
---[[
-minetest.on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
-	print(dump(node))
-	local player_name = clicker:get_player_name()
-	local mypos = minetest.pos_to_string(pos)
-	minetest.chat_send_all(player_name )
-	if node.name == "mesecons_switch:mesecon_switch_off" then
-		local mypos = minetest.pos_to_string(pos)
-		minetest.chat_send_all(player_name .." is right-click on me. I'm located at ".. mypos)
-	end
-end
-]]
---[[
-minetest.on_rightclick(function(pos, node, player, itemstack, pointed_thing)
-	if node.name == "default:brick" then
-		local player_name = player:get_player_name()
-		local mypos = minetest.pos_to_string(pos)
-		minetest.chat_send_all(player_name .." is right-click on me. I'm located at ".. mypos)
-	end
-end)
-]]
+-- Use switch to on/off and use pick wood to change the value
+minetest.register_tool("nekromod:pick_wood", {
+    	description = "Wooden Pickaxe Weapon",
+    	inventory_image = "default_tool_woodpick.png",
+    	tool_capabilities = {
+    	},
+
+	-- Left button mouse
+	on_use = function(itemstack, user, pointed_thing)
+		local pos = pointed_thing.under
+		if not pos then
+			return itemstack
+		end
+
+		local meta = minetest.get_meta(pos)
+
+		local nodeName = minetest.get_node(pos).name
+
+		minetest.chat_send_all("on_use; x=" .. pos.x .. " y=" .. pos.y .. " z=" .. pos.z .. " name=" .. nodeName)
+
+		if nodeName  == "mesecons_switch:mesecon_switch_on" then
+			minetest.set_node({x=pos.x, y=pos.y, z=pos.z }, {name="mesecons_switch:mesecon_switch_off"})
+		else
+			minetest.set_node({x=pos.x, y=pos.y, z=pos.z }, {name="mesecons_switch:mesecon_switch_on"})
+		end
+
+		return itemstack
+	end,
+	
+	-- Right button mouse
+    	on_place = function(itemstack, user, pointed_thing)
+		local pos = pointed_thing
+		if not pos then
+			return itemstack
+		end
+
+		 minetest.chat_send_all("on_place;" )
+
+        	return itemstack
+    	end,
+})
+
