@@ -1,3 +1,80 @@
+-- Database
+
+
+
+sqlite3 = require("lsqlite3")
+
+databaseName = "mt_gandi.sqlite3"
+
+function initDatabase()
+    local db = sqlite3.open(databaseName)
+    db:exec[[
+      CREATE TABLE server (id INTEGER PRIMARY KEY AUTOINCREMENT,  
+                         hostname CHAR(32),
+                         ipv4 CHAR(32),
+                         ipv6 CHAR(32),
+			 posx CHAR(32),
+			 posy CHAR(32),
+			 posz CHAR(32)
+                        );
+
+    ]]
+    db:close()
+end
+
+
+-- Lua CRUD method
+function insertServer(hostname, ipv4, ipv6, posx, posy, posz)
+    local db = sqlite3.open(databaseName)
+    local stmt = db:prepare[[ INSERT INTO server VALUES (null, :hostname, :ipv4, :ipv6, :posx, :posy, :posz) ]]
+    stmt:bind_names{ hostname = hostname, ipv4 = ipv4, ipv6 = ipv6, posx = posx, posy = posy, posz = posz  }
+    stmt:step()
+    stmt:finalize()
+    db:close()
+end
+
+function selectServer()
+    local db = sqlite3.open(databaseName)
+    for row in db:nrows("SELECT * FROM server") do
+      print(row.id, row.hostname, row.ipv4, row.ipv6, row.posx, row.posy, row.posz)
+    end 
+    db:close()
+end
+
+
+function updateServer(id, field, value)
+    local db = sqlite3.open(databaseName)
+    if field == "ipv6" then
+        local stmt = db:prepare[[ UPDATE server SET  ipv6 = :value WHERE id = :id ]]
+        stmt:bind_names{  id = id,  value = value  }
+        stmt:step()
+        stmt:finalize()
+    end
+    db:close()
+end
+
+
+function deleteServer(id)
+    local db = sqlite3.open(databaseName)
+    local stmt = db:prepare[[ DELETE FROM server WHERE id = :id ]]
+    stmt:bind_names{  id = id }
+    stmt:step()
+    stmt:finalize()
+    db:close()
+end
+
+
+function seperator()
+    print("-----------------------")
+end
+
+-- Init database
+initDatabase()
+
+
+
+
+
 -- whereis <player name>
 -- Display player location
 
@@ -67,9 +144,30 @@ minetest.register_chatcommand("build", {
 		-- /build pillar 5
 		if structureName == "pillar" then
 			local heightPillar = tonumber(structureParam)
-			for i=0,heightPillar do
+			for i = 0, heightPillar do
 				minetest.set_node({x=pos.x + 2, y=pos.y + i, z=pos.z }, {name="default:ice"})
 			end
+			
+
+		-- /build server hostname
+		elseif structureName == "server" then
+			for i = 0, 4 do
+				for j = 0, 4 do
+					for k = 0, 2 do
+						minetest.set_node({x = pos.x + 2 + i, y = pos.y + k, z = pos.z + j}, {name="default:ice"})
+					end
+				end
+			end
+			for i = 0, 4 do
+				for j = 0, 2 do
+					minetest.set_node({x = pos.x + 2 + i , y = pos.y + j, z = pos.z }, {name="mesecons_switch:mesecon_switch_off"})
+				end
+			end
+
+			hostname = structureParam
+			insertServer(hostname, "ipv4", "Ipv6", tostring(pos.x + 2), tostring(pos.y), tostring(pos.z))
+			selectServer()
+
 
 		-- /build sign_yard
 		elseif structureName == "sign_yard" then
@@ -84,6 +182,7 @@ minetest.register_chatcommand("build", {
 
 			minetest.set_node({x=pos.x + 3, y=pos.y, z=pos.z }, {name="default:ice"})
 			minetest.set_node({x=pos.x + 4, y=pos.y, z=pos.z }, {name="default:ice"})
+
 
 		-- /build switch
 		elseif structureName == "switch" then
