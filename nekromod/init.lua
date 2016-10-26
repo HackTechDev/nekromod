@@ -13,9 +13,9 @@ function initDatabase()
                          hostname CHAR(32),
                          ipv4 CHAR(32),
                          ipv6 CHAR(32),
-			 posx CHAR(32),
-			 posy CHAR(32),
-			 posz CHAR(32)
+			 posx INTEGER,
+			 posy INTEGER,
+			 posz INTEGER
                         );
 
     ]]
@@ -165,7 +165,7 @@ minetest.register_chatcommand("build", {
 			end
 
 			hostname = structureParam
-			insertServer(hostname, "ipv4", "Ipv6", tostring(pos.x + 2), tostring(pos.y), tostring(pos.z))
+			insertServer(hostname, "ipv4", "Ipv6", pos.x + 2, pos.y, pos.z)
 			selectServer()
 
 
