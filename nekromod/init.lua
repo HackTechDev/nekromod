@@ -143,6 +143,7 @@ minetest.register_chatcommand("build", {
 		
 		-- /build pillar 5
 		if structureName == "pillar" then
+			minetest.chat_send_player(user, "Build pillar " .. structureParam)
 			local heightPillar = tonumber(structureParam)
 			for i = 0, heightPillar do
 				minetest.set_node({x=pos.x + 2, y=pos.y + i, z=pos.z }, {name="default:ice"})
@@ -151,6 +152,7 @@ minetest.register_chatcommand("build", {
 
 		-- /build server hostname
 		elseif structureName == "server" then
+			minetest.chat_send_player(user, "Build server " .. structureParam)
 			for i = 0, 4 do
 				for j = 0, 4 do
 					for k = 0, 2 do
@@ -171,6 +173,7 @@ minetest.register_chatcommand("build", {
 
 		-- /build sign_yard
 		elseif structureName == "sign_yard" then
+			minetest.chat_send_player(user, "Build sign yard")
 			minetest.set_node({x=pos.x    , y=pos.y, z=pos.z }, {name="default:ice"})
 			minetest.set_node({x=pos.x + 1, y=pos.y, z=pos.z }, {name="default:ice"})
 
@@ -186,8 +189,9 @@ minetest.register_chatcommand("build", {
 
 		-- /build switch
 		elseif structureName == "switch" then
+			minetest.chat_send_player(user, "Build switch")
 			minetest.set_node({x=pos.x + 2, y=pos.y, z=pos.z }, {name="mesecons_switch:mesecon_switch_off"})
-			minetest.chat_send_all("mesecons_switch:mesecon_switch_off; x=" .. pos.x + 2 .. " y=" .. pos.y .. " z=" .. pos.z)
+			minetest.chat_send_player(user, "mesecons_switch:mesecon_switch_off; x=" .. pos.x + 2 .. " y=" .. pos.y .. " z=" .. pos.z)
 
 		else
 			return false, "No structure builded"
@@ -204,7 +208,7 @@ minetest.register_on_punchnode(function(pos, node, puncher, pointed_thing)
 	if node.name == "default:brick" then
 		local puncher_name = puncher:get_player_name()
 		local mypos = minetest.pos_to_string(pos) -- Sets variable to (X,Y,Z.. where Y is up) 
-		minetest.chat_send_all(puncher_name .." is hitting me. I'm located at ".. mypos)		
+		minetest.chat_send_player(puncher_man, puncher_name .." is hitting me. I'm located at ".. mypos)		
 	end 
 	if node.name == "default:desert_stonebrick" then
 		local puncher_name = puncher:get_player_name()
@@ -213,7 +217,7 @@ minetest.register_on_punchnode(function(pos, node, puncher, pointed_thing)
 	if node.name == "mesecons_switch:mesecon_switch_off" then
 		local puncher_name = puncher:get_player_name()
 		local mypos = minetest.pos_to_string(pos)
-		minetest.chat_send_all(puncher_name .." switch: ".. mypos)
+		minetest.chat_send_player(puncher_name, puncher_name .." switch: ".. mypos)
 	end
 end)
 
@@ -234,12 +238,14 @@ minetest.register_tool("nekromod:pick_wood", {
 		-- Player
                 --local player = minetest.get_player_by_name(user)
                 local playerPos = user:getpos()
-		minetest.chat_send_all("player; x=" .. playerPos.x .. " y=" .. playerPos.y .. " z=" .. playerPos.z)
+		local playerName = user:get_player_name()
+
+		minetest.chat_send_player(playerName, "player; x=" .. playerPos.x .. " y=" .. playerPos.y .. " z=" .. playerPos.z)
 
 		-- Node
 		local meta = minetest.get_meta(pos)
 		local nodeName = minetest.get_node(pos).name
-		minetest.chat_send_all("on_use; x=" .. pos.x .. " y=" .. pos.y .. " z=" .. pos.z .. " name=" .. nodeName)
+		minetest.chat_send_player(playerName, "on_use; x=" .. pos.x .. " y=" .. pos.y .. " z=" .. pos.z .. " name=" .. nodeName)
 
 		-- Check distance between player and node
 		if (playerPos.x > pos.x - 3  and playerPos.x < pos.x + 3) and
@@ -261,10 +267,31 @@ minetest.register_tool("nekromod:pick_wood", {
 		if not pos then
 			return itemstack
 		end
-
-		 minetest.chat_send_all("on_place;" )
+		
+		local playerName = user:get_player_name()
+		minetest.chat_send_player(playerName, "on_place;" )
 
         	return itemstack
     	end,
 })
 
+
+-- Who's online
+
+minetest.register_chatcommand("whosonline", {
+    params = "",
+    description = "List all connected players.",
+    func = function(name)
+        connected_players_string = 'Players online: '
+ 
+        for _,player in ipairs(minetest.get_connected_players()) do
+            connected_players_string  =  connected_players_string .. 
+                                         player:get_player_name() .. 
+                                         ' '
+        end
+ 
+        minetest.chat_send_player(name, connected_players_string)
+ 
+        return true
+    end
+})
