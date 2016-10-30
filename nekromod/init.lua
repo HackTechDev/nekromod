@@ -1,13 +1,12 @@
 -- Database
 
-
-
 sqlite3 = require("lsqlite3")
 
 databaseName = "mt_gandi.sqlite3"
 
 function initDatabase()
     local db = sqlite3.open(databaseName)
+
     db:exec[[
       CREATE TABLE server (id INTEGER PRIMARY KEY AUTOINCREMENT,  
                          hostname CHAR(32),
@@ -18,12 +17,61 @@ function initDatabase()
 			 posz INTEGER
                         );
 
+      CREATE TABLE switch (id INTEGER PRIMARY KEY AUTOINCREMENT,  
+                         hostname CHAR(32),
+
+			 s1 INTEGER,
+			 s2 INTEGER,
+			 s3 INTEGER,
+			 s4 INTEGER,
+			 s5 INTEGER,
+
+		 	 s6 INTEGER,
+			 s7 INTEGER,
+			 s8 INTEGER,
+			 s9 INTEGER,
+		 	 s10 INTEGER,
+
+			 s11 INTEGER,
+			 s12 INTEGER,
+			 s13 INTEGER,
+			 s14 INTEGER,
+			 s15 INTEGER
+                        );
+
     ]]
+
     db:close()
 end
 
 
--- Lua CRUD method
+-- Switch CRUD method
+function insertSwitch(hostname, s1, s2, s3, s4, s5)
+    local db = sqlite3.open(databaseName)
+    local stmt = db:prepare[[ 	
+				INSERT INTO switch VALUES (null, :hostname,  :s1, :s2, :s3, :s4, :s5, 
+									0, 0, 0, 0, 0, 
+									0, 0, 0, 0, 0) 
+			   ]]
+
+    stmt:bind_names{ hostname = hostname, s1 = s1, s2 = s2, s3 = s3, s4 = s4, s5 = s5 }
+    stmt:step()
+    stmt:finalize()
+    db:close()
+end
+
+function selectSwitch(hostname)
+    local db = sqlite3.open(databaseName)
+    for row in db:nrows("SELECT * FROM switch WHERE hostname = '".. hostname .. "'") do
+      print(row.id, row.hostname, row.s1, row.s2, row.s3, row.s4, row.s5,
+				  row.s6, row.s7, row.s8, row.s9, row.s10,
+				  row.s11, row.s12, row.s13, row.s14, row.s15)
+    end 
+    db:close()
+end
+
+
+-- Server CRUD method
 function insertServer(hostname, ipv4, ipv6, posx, posy, posz)
     local db = sqlite3.open(databaseName)
     local stmt = db:prepare[[ INSERT INTO server VALUES (null, :hostname, :ipv4, :ipv6, :posx, :posy, :posz) ]]
@@ -33,9 +81,9 @@ function insertServer(hostname, ipv4, ipv6, posx, posy, posz)
     db:close()
 end
 
-function selectServer()
+function selectServer(hostname)
     local db = sqlite3.open(databaseName)
-    for row in db:nrows("SELECT * FROM server") do
+    for row in db:nrows("SELECT * FROM server WHERE hostname = '" .. hostname .. "'") do
       print(row.id, row.hostname, row.ipv4, row.ipv6, row.posx, row.posy, row.posz)
     end 
     db:close()
@@ -64,9 +112,13 @@ function deleteServer(id)
 end
 
 
-function seperator()
+function separator()
     print("-----------------------")
 end
+
+------------------------------------------------------------------
+------------------------------------------------------------------
+
 
 -- Init database
 initDatabase()
@@ -166,10 +218,20 @@ minetest.register_chatcommand("build", {
 				end
 			end
 
-			hostname = structureParam
-			insertServer(hostname, "ipv4", "Ipv6", pos.x + 2, pos.y, pos.z)
-			selectServer()
+			local hostname = structureParam
 
+			insertServer(hostname, "ipv4", "Ipv6", pos.x + 2, pos.y, pos.z)
+			local s1 = 111
+			local s2 = 222
+			local s3 = 333
+			local s4 = 444
+			local s5 = 555
+			insertSwitch(hostname, s1, s2, s3, s4, s5)
+
+			separator()
+			selectServer(hostname)
+			separator()
+			selectSwitch(hostname)
 
 		-- /build sign_yard
 		elseif structureName == "sign_yard" then
