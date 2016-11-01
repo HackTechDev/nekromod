@@ -257,55 +257,20 @@ installServer = false
 installServerName = "ServerNameDefault"
 installOperatingSystem = "OperatingSystemDefault" 
 
-minetest.register_chatcommand("installServer", {
-	params = "<server name> <operating system>",
-	description = "Build a structure with parameters",
+minetest.register_chatcommand("server", {
+	params = "<build|install|info> <server name>",
+	description = "Build a server name",
 	func = function(user, args)
 
 		if args == "" then
-			return false, "Parameters required."
+			return false, "<build|install|info> <server name> parameters required"
 		end
 
-		local serverName, operatingSystem = args:match("^(%S+)%s(%S+)$")
+		local serverAction, serverName = args:match("^(%S+)%s(%S+)$")
 
-		if not operatingSystem then
-			return false, "Operating System required"
-		end
-
-		local player = minetest.get_player_by_name(user)
-		if not player then
-			return false, "Player not found"
-		end
-
-		local fmt = "Install %s at: (%.2f,%.2f,%.2f)"
-
-		local pos = player:getpos()
-		
-		installServerName = serverName
-		installOperatingSystem = operatingSystem
-		installServer = true
-
-		print("Server installation: '" .. installServerName .. "' with '" .. installOperatingSystem .. "'")
-		minetest.chat_send_player(user, "Server installation: '" .. installServerName .. "' with '" .. installOperatingSystem .. "'")
-
-		return true, fmt:format(args, pos.x, pos.y, pos.z)
-	end
-})
-
-
-minetest.register_chatcommand("serverInfo", {
-	params = "<server name>",
-	description = "",
-	func = function(user, args)
-
-		if args == "" then
-			return false, "Parameters required."
-		end
-
-		local serverName = args:match("^(%S+)$")
 
 		if not serverName then
-			return false, "Servername required"
+			return false, "server name required"
 		end
 
 		local player = minetest.get_player_by_name(user)
@@ -313,19 +278,54 @@ minetest.register_chatcommand("serverInfo", {
 			return false, "Player not found"
 		end
 
-		local fmt = "Server information %s at: (%.2f,%.2f,%.2f)"
-
-		local pos = player:getpos()
+		local fmt = "Server %s at: (%.2f,%.2f,%.2f)"
 		
-		print("------ SERVER ------")
-		selectServer(serverName)
-		print("------ SWITCH ------")
-		selectSwitch(serverName)
+		local pos = player:getpos()
+
+
+
+		-- /build server hostname
+		if serverAction == "build" then
+			minetest.chat_send_player(user, "Build server: " .. serverName)
+			-- Ice node
+			for i = 0, 4 do
+				for j = 0, 4 do
+					for k = 0, 2 do
+						minetest.set_node({x = pos.x + 2 + i, y = pos.y + k, z = pos.z + j}, {name="default:ice"})
+					end
+				end
+			end
+			-- Switch node
+			for i = 0, 4 do
+				for j = 0, 2 do
+					minetest.set_node({x = pos.x + 2 + i , y = pos.y + j, z = pos.z }, {name="mesecons_switch:mesecon_switch_off"})
+				end
+			end
+
+			installServerName = serverName
+			buildServer = true
+
+		elseif serverAction == "install" then
+			installServerName = serverName
+			installServer = true
+
+			print("Server installation: '" .. installServerName .. "'")
+			minetest.chat_send_player(user, "Server installation: '" .. installServerName .. "'")
+
+		elseif serverAction == "info" then
+			print("------ SERVER ------")
+			selectServer(serverName)
+			print("------ SWITCH ------")
+			selectSwitch(serverName)
+		end	
 
 
 		return true, fmt:format(args, pos.x, pos.y, pos.z)
 	end
 })
+
+
+
 
 -- build <player> <structure>
 -- Build a structure
@@ -362,28 +362,6 @@ minetest.register_chatcommand("buildStructure", {
 				minetest.set_node({x=pos.x + 2, y=pos.y + i, z=pos.z }, {name="default:ice"})
 			end
 			
-
-		-- /build server hostname
-		elseif structureName == "server" then
-			minetest.chat_send_player(user, "Build server " .. structureParam)
-			-- Ice node
-			for i = 0, 4 do
-				for j = 0, 4 do
-					for k = 0, 2 do
-						minetest.set_node({x = pos.x + 2 + i, y = pos.y + k, z = pos.z + j}, {name="default:ice"})
-					end
-				end
-			end
-			-- Switch node
-			for i = 0, 4 do
-				for j = 0, 2 do
-					minetest.set_node({x = pos.x + 2 + i , y = pos.y + j, z = pos.z }, {name="mesecons_switch:mesecon_switch_off"})
-				end
-			end
-
-			buildServer = true
-			
-
 		-- /build sign_yard
 		elseif structureName == "sign_yard" then
 			minetest.chat_send_player(user, "Build sign yard")
@@ -475,7 +453,7 @@ minetest.register_tool("nekromod:pick_wood", {
 
 			-- Select the first node : bottom left node
 			print("Debug: " .. tostring(buildServer) .. " " .. tostring(installServer) .. " " .. installServerName .. " " .. installOperatingSystem)
-			if buildServer == true and installServer == true and installServerName ~= "ServerNameDefault" and installOperatingSystem ~= "OperatingSystemDefault" then
+			if buildServer == true and installServer == true and installServerName ~= "ServerNameDefault" then
 
 				-- Insert a server
 				insertServer(installServerName, "ipv4", "Ipv6", pos.x , pos.y, pos.z)
@@ -521,7 +499,7 @@ minetest.register_tool("nekromod:pick_wood", {
 				buildServer = false
 				installServer = false
 				installServerName = "ServerNameDefault"
-				installOperatingSystem = "OperatingSystemDefault" 
+			
 			else
 			 	updateSwitch(pos.x, pos.y, pos.z, 666)
 			end
