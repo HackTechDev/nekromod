@@ -164,6 +164,59 @@ function updateSwitch(sx, sy, sz, sv)
     stmt:step()
     stmt:finalize()
 
+
+    local stmt = db:prepare[[ 	UPDATE switch SET s6 = :sv WHERE s6x = :sx AND s6y = :sy AND s6z = :sz ]]
+    stmt:bind_names{ sx= sx, sy = sy, sz = sz, sv = sv }
+    stmt:step()
+    stmt:finalize()
+
+    local stmt = db:prepare[[ 	UPDATE switch SET s7 = :sv WHERE s7x = :sx AND s7y = :sy AND s7z = :sz ]]
+    stmt:bind_names{ sx= sx, sy = sy, sz = sz, sv = sv }
+    stmt:step()
+    stmt:finalize()
+
+
+    local stmt = db:prepare[[ 	UPDATE switch SET s8 = :sv WHERE s8x = :sx AND s8y = :sy AND s8z = :sz ]]
+    stmt:bind_names{ sx= sx, sy = sy, sz = sz, sv = sv }
+    stmt:step()
+    stmt:finalize()
+
+    local stmt = db:prepare[[ 	UPDATE switch SET s9 = :sv WHERE s9x = :sx AND s9y = :sy AND s9z = :sz ]]
+    stmt:bind_names{ sx= sx, sy = sy, sz = sz, sv = sv }
+    stmt:step()
+    stmt:finalize()
+
+    local stmt = db:prepare[[ 	UPDATE switch SET s10 = :sv WHERE s10x = :sx AND s10y = :sy AND s10z = :sz ]]
+    stmt:bind_names{ sx= sx, sy = sy, sz = sz, sv = sv }
+    stmt:step()
+    stmt:finalize()
+
+    local stmt = db:prepare[[ 	UPDATE switch SET s11 = :sv WHERE s11x = :sx AND s11y = :sy AND s11z = :sz ]]
+    stmt:bind_names{ sx= sx, sy = sy, sz = sz, sv = sv }
+    stmt:step()
+    stmt:finalize()
+
+    local stmt = db:prepare[[ 	UPDATE switch SET s12 = :sv WHERE s12x = :sx AND s12y = :sy AND s12z = :sz ]]
+    stmt:bind_names{ sx= sx, sy = sy, sz = sz, sv = sv }
+    stmt:step()
+    stmt:finalize()
+
+
+    local stmt = db:prepare[[ 	UPDATE switch SET s13 = :sv WHERE s13x = :sx AND s13y = :sy AND s13z = :sz ]]
+    stmt:bind_names{ sx= sx, sy = sy, sz = sz, sv = sv }
+    stmt:step()
+    stmt:finalize()
+
+    local stmt = db:prepare[[ 	UPDATE switch SET s14 = :sv WHERE s14x = :sx AND s14y = :sy AND s14z = :sz ]]
+    stmt:bind_names{ sx= sx, sy = sy, sz = sz, sv = sv }
+    stmt:step()
+    stmt:finalize()
+
+    local stmt = db:prepare[[ 	UPDATE switch SET s15 = :sv WHERE s15x = :sx AND s15y = :sy AND s15z = :sz ]]
+    stmt:bind_names{ sx= sx, sy = sy, sz = sz, sv = sv }
+    stmt:step()
+    stmt:finalize()
+
     db:close()
 end
 
@@ -521,7 +574,7 @@ minetest.register_tool("nekromod:pick_wood", {
 				installServerName = "ServerNameDefault"
 			
 			else
-				local s = 666
+				local s = 123
 				print("updateSwitch: x=" .. pos.x .. " y=" .. pos.y .. " z=" .. pos.z .. " s=" .. s)
 			 	updateSwitch(pos.x, pos.y, pos.z, s)
 			end
