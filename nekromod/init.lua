@@ -99,13 +99,6 @@ function insertSwitch(hostname, s1x, s1y, s1z, s1,
 				s4x, s4y, s4z, s4,   
 				s5x, s5y, s5z, s5)
 
-    print(hostname, s1x, s1y, s1z, s1,
-                                s2x, s2y, s2z, s2,
-                                s3x, s3y, s3z, s3,
-                                s4x, s4y, s4z, s4,
-                                s5x, s5y, s5z, s5)
-
-
     local db = sqlite3.open(databaseName)
     local stmt = db:prepare[[ 	
 				INSERT INTO switch VALUES (null, :hostname,  	:s1x, :s1y, :s1z, :s1,   
@@ -141,13 +134,13 @@ function selectSwitch(hostname)
 end
 
 
-function updateSwitch(hostname, s1x, s1y, s1z, s1)
+function updateSwitch(s1x, s1y, s1z, s1)
     local db = sqlite3.open(databaseName)
     local stmt = db:prepare[[ 	
-				UPDATE switch SET s1 = :s1 WHERE hostname = :hostname AND s1x = 4 AND s1y = 4 AND s1z = 5
+				UPDATE switch SET s1 = :s1 WHERE s1x = :s1x AND s1y = :s1y AND s1z = :s1z
 			   ]]
 
-    stmt:bind_names{ hostname = hostname, s1x= s1x, s1y = s1y, s1z = s1z, s1 = s1 }
+    stmt:bind_names{ s1x= s1x, s1y = s1y, s1z = s1z, s1 = s1 }
     stmt:step()
     stmt:finalize()
 
@@ -254,10 +247,90 @@ minetest.register_chatcommand("myinfo", {
 })
 
 
+
+-- /installServer <server name> <operating system>
+-- 
+
+buildServer = false
+installServer = false
+
+installServerName = "ServerNameDefault"
+installOperatingSystem = "OperatingSystemDefault" 
+
+minetest.register_chatcommand("installServer", {
+	params = "<server name> <operating system>",
+	description = "Build a structure with parameters",
+	func = function(user, args)
+
+		if args == "" then
+			return false, "Parameters required."
+		end
+
+		local serverName, operatingSystem = args:match("^(%S+)%s(%S+)$")
+
+		if not operatingSystem then
+			return false, "Operating System required"
+		end
+
+		local player = minetest.get_player_by_name(user)
+		if not player then
+			return false, "Player not found"
+		end
+
+		local fmt = "Install %s at: (%.2f,%.2f,%.2f)"
+
+		local pos = player:getpos()
+		
+		installServerName = serverName
+		installOperatingSystem = operatingSystem
+		installServer = true
+
+		print("Server installation: '" .. installServerName .. "' with '" .. installOperatingSystem .. "'")
+		minetest.chat_send_player(user, "Server installation: '" .. installServerName .. "' with '" .. installOperatingSystem .. "'")
+
+		return true, fmt:format(args, pos.x, pos.y, pos.z)
+	end
+})
+
+
+minetest.register_chatcommand("serverInfo", {
+	params = "<server name>",
+	description = "",
+	func = function(user, args)
+
+		if args == "" then
+			return false, "Parameters required."
+		end
+
+		local serverName = args:match("^(%S+)$")
+
+		if not serverName then
+			return false, "Servername required"
+		end
+
+		local player = minetest.get_player_by_name(user)
+		if not player then
+			return false, "Player not found"
+		end
+
+		local fmt = "Server information %s at: (%.2f,%.2f,%.2f)"
+
+		local pos = player:getpos()
+		
+		print("------ SERVER ------")
+		selectServer(serverName)
+		print("------ SWITCH ------")
+		selectSwitch(serverName)
+
+
+		return true, fmt:format(args, pos.x, pos.y, pos.z)
+	end
+})
+
 -- build <player> <structure>
 -- Build a structure
 
-minetest.register_chatcommand("build", {
+minetest.register_chatcommand("buildStructure", {
 	params = "<structure name> <structure param>",
 	description = "Build a structure with parameters",
 	func = function(user, args)
@@ -277,7 +350,7 @@ minetest.register_chatcommand("build", {
 			return false, "Player not found"
 		end
 
-		local fmt = "Player %s is at (%.2f,%.2f,%.2f)"
+		local fmt = "Build a %s at: (%.2f,%.2f,%.2f)"
 
 		local pos = player:getpos()
 		
@@ -293,6 +366,7 @@ minetest.register_chatcommand("build", {
 		-- /build server hostname
 		elseif structureName == "server" then
 			minetest.chat_send_player(user, "Build server " .. structureParam)
+			-- Ice node
 			for i = 0, 4 do
 				for j = 0, 4 do
 					for k = 0, 2 do
@@ -300,45 +374,15 @@ minetest.register_chatcommand("build", {
 					end
 				end
 			end
+			-- Switch node
 			for i = 0, 4 do
 				for j = 0, 2 do
 					minetest.set_node({x = pos.x + 2 + i , y = pos.y + j, z = pos.z }, {name="mesecons_switch:mesecon_switch_off"})
 				end
 			end
 
-			local hostname = structureParam
-
-			insertServer(hostname, "ipv4", "Ipv6", pos.x + 2, pos.y, pos.z)
-			local s1x = 11
-			local s1y = 12
-			local s1z = 13
-			local s1  = 10
-			local s2x = 21
-			local s2y = 22
-			local s2z = 23
-			local s2  = 20
-			local s3x = 31
-			local s3y = 32
-			local s3z = 33
-			local s3  = 30
-			local s4x = 41
-			local s4y = 42
-			local s4z = 43
-			local s4  = 40
-			local s5x = 51
-			local s5y = 52
-			local s5z = 53
-			local s5  = 50
-			insertSwitch(hostname, 	s1x, s1y, s1z, s1, 
-					       	s2x, s2y, s2z, s2, 
-						s3x, s3y, s3z, s3, 
-						s4x, s4y, s4z, s4, 
-						s5x, s5y, s5z, s5)
-
-			separator()
-			selectServer(hostname)
-			separator()
-			--selectSwitch(hostname)
+			buildServer = true
+			
 
 		-- /build sign_yard
 		elseif structureName == "sign_yard" then
@@ -420,11 +464,69 @@ minetest.register_tool("nekromod:pick_wood", {
 		if (playerPos.x > pos.x - 3  and playerPos.x < pos.x + 3) and
 		   (playerPos.y > pos.y - 3  and playerPos.y < pos.y + 3) and
 		   (playerPos.z > pos.z - 3  and playerPos.z < pos.z + 3) then
+			
+			print("on_use; x=" .. pos.x .. " y=" .. pos.y .. " z=" .. pos.z .. " name=" .. nodeName)
 			if nodeName  == "mesecons_switch:mesecon_switch_on" then
-				minetest.set_node({x=pos.x, y=pos.y, z=pos.z }, {name="mesecons_switch:mesecon_switch_off"})
+				minetest.set_node({x = pos.x, y = pos.y, z = pos.z }, {name = "mesecons_switch:mesecon_switch_off"})
 			else
-				minetest.set_node({x=pos.x, y=pos.y, z=pos.z }, {name="mesecons_switch:mesecon_switch_on"})
+				minetest.set_node({x = pos.x, y = pos.y, z = pos.z }, {name = "mesecons_switch:mesecon_switch_on"})
 			end
+
+
+			-- Select the first node : bottom left node
+			print("Debug: " .. tostring(buildServer) .. " " .. tostring(installServer) .. " " .. installServerName .. " " .. installOperatingSystem)
+			if buildServer == true and installServer == true and installServerName ~= "ServerNameDefault" and installOperatingSystem ~= "OperatingSystemDefault" then
+
+				-- Insert a server
+				insertServer(installServerName, "ipv4", "Ipv6", pos.x , pos.y, pos.z)
+
+				-- Insert switches server
+				local s1x = pos.x 
+				local s1y = pos.y 
+				local s1z = pos.z 
+				local s1  = 0
+
+				local s2x = pos.x + 1
+				local s2y = pos.y 
+				local s2z = pos.z 
+				local s2  = 0
+
+				local s3x = pos.x + 2
+				local s3y = pos.y 
+				local s3z = pos.z 
+				local s3  = 0
+
+				local s4x = pos.x + 3
+				local s4y = pos.y 
+				local s4z = pos.z 
+				local s4  = 0
+
+				local s5x = pos.x + 4
+				local s5y = pos.y 
+				local s5z = pos.z 
+				local s5  = 0
+
+				insertSwitch(installServerName,	s1x, s1y, s1z, s1, 
+						       		s2x, s2y, s2z, s2, 
+								s3x, s3y, s3z, s3, 
+								s4x, s4y, s4z, s4, 
+								s5x, s5y, s5z, s5)
+
+				print("------ SERVER ------")
+				selectServer(installServerName)
+				print("------ SWITCH ------")
+				selectSwitch(installServerName)
+
+
+				buildServer = false
+				installServer = false
+				installServerName = "ServerNameDefault"
+				installOperatingSystem = "OperatingSystemDefault" 
+			else
+			 	updateSwitch(pos.x, pos.y, pos.z, 666)
+			end
+
+
 		end
 
 		return itemstack
