@@ -134,13 +134,33 @@ function selectSwitch(hostname)
 end
 
 
-function updateSwitch(s1x, s1y, s1z, s1)
+function updateSwitch(sx, sy, sz, sv)
+    print(sx .. " " .. sy .. " " ..  sz .. " " .. sv)
     local db = sqlite3.open(databaseName)
-    local stmt = db:prepare[[ 	
-				UPDATE switch SET s1 = :s1 WHERE s1x = :s1x AND s1y = :s1y AND s1z = :s1z
-			   ]]
 
-    stmt:bind_names{ s1x= s1x, s1y = s1y, s1z = s1z, s1 = s1 }
+    local stmt = db:prepare[[ 	UPDATE switch SET s1 = :sv WHERE s1x = :sx AND s1y = :sy AND s1z = :sz ]]
+    stmt:bind_names{ sx= sx, sy = sy, sz = sz, sv = sv }
+    stmt:step()
+    stmt:finalize()
+
+    local stmt = db:prepare[[ 	UPDATE switch SET s2 = :sv WHERE s2x = :sx AND s2y = :sy AND s2z = :sz ]]
+    stmt:bind_names{ sx= sx, sy = sy, sz = sz, sv = sv }
+    stmt:step()
+    stmt:finalize()
+
+
+    local stmt = db:prepare[[ 	UPDATE switch SET s3 = :sv WHERE s3x = :sx AND s3y = :sy AND s3z = :sz ]]
+    stmt:bind_names{ sx= sx, sy = sy, sz = sz, sv = sv }
+    stmt:step()
+    stmt:finalize()
+
+    local stmt = db:prepare[[ 	UPDATE switch SET s4 = :sv WHERE s4x = :sx AND s4y = :sy AND s4z = :sz ]]
+    stmt:bind_names{ sx= sx, sy = sy, sz = sz, sv = sv }
+    stmt:step()
+    stmt:finalize()
+
+    local stmt = db:prepare[[ 	UPDATE switch SET s5 = :sv WHERE s5x = :sx AND s5y = :sy AND s5z = :sz ]]
+    stmt:bind_names{ sx= sx, sy = sy, sz = sz, sv = sv }
     stmt:step()
     stmt:finalize()
 
@@ -255,7 +275,6 @@ buildServer = false
 installServer = false
 
 installServerName = "ServerNameDefault"
-installOperatingSystem = "OperatingSystemDefault" 
 
 minetest.register_chatcommand("server", {
 	params = "<build|install|info> <server name>",
@@ -451,8 +470,9 @@ minetest.register_tool("nekromod:pick_wood", {
 			end
 
 
+			-- Server installation
 			-- Select the first node : bottom left node
-			print("Debug: " .. tostring(buildServer) .. " " .. tostring(installServer) .. " " .. installServerName .. " " .. installOperatingSystem)
+			print("Debug: " .. tostring(buildServer) .. " " .. tostring(installServer) .. " " .. installServerName)
 			if buildServer == true and installServer == true and installServerName ~= "ServerNameDefault" then
 
 				-- Insert a server
@@ -501,7 +521,9 @@ minetest.register_tool("nekromod:pick_wood", {
 				installServerName = "ServerNameDefault"
 			
 			else
-			 	updateSwitch(pos.x, pos.y, pos.z, 666)
+				local s = 666
+				print("updateSwitch: x=" .. pos.x .. " y=" .. pos.y .. " z=" .. pos.z .. " s=" .. s)
+			 	updateSwitch(pos.x, pos.y, pos.z, s)
 			end
 
 
