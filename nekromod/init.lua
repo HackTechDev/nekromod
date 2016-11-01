@@ -18,25 +18,72 @@ function initDatabase()
                         );
 
       CREATE TABLE switch (id INTEGER PRIMARY KEY AUTOINCREMENT,  
+
                          hostname CHAR(32),
 
-			 s1 INTEGER,
-			 s2 INTEGER,
-			 s3 INTEGER,
-			 s4 INTEGER,
-			 s5 INTEGER,
+			 s1x INTEGER,
+			 s1y INTEGER,
+			 s1z INTEGER,
+			 s1  INTEGER,
+			 s2x INTEGER,
+			 s2y INTEGER,
+			 s2z INTEGER,
+			 s2  INTEGER,
+			 s3x INTEGER,
+		 	 s3y INTEGER,
+		         s3z INTEGER,
+			 s3  INTEGER,
+			 s4x INTEGER,
+			 s4y INTEGER,
+			 s4z INTEGER,
+			 s4  INTEGER,
+			 s5x INTEGER,
+		 	 s5y INTEGER,
+			 s5z INTEGER,
+			 s5  INTEGER,
 
-		 	 s6 INTEGER,
-			 s7 INTEGER,
-			 s8 INTEGER,
-			 s9 INTEGER,
-		 	 s10 INTEGER,
+			 s6x INTEGER,
+			 s6y INTEGER,
+			 s6z INTEGER,
+			 s6  INTEGER,
+			 s7x INTEGER,
+			 s7y INTEGER,
+			 s7z INTEGER,
+			 s7  INTEGER,
+			 s8x INTEGER,
+			 s8y INTEGER,
+			 s8z INTEGER,
+			 s8  INTEGER,
+			 s9x INTEGER,
+			 s9y INTEGER,
+			 s9z INTEGER,
+			 s9  INTEGER,
+			 s10x INTEGER,
+			 s10y INTEGER,
+			 s10z INTEGER,
+			 s10  INTEGER,
 
-			 s11 INTEGER,
-			 s12 INTEGER,
-			 s13 INTEGER,
-			 s14 INTEGER,
-			 s15 INTEGER
+		 	 s11x INTEGER,
+			 s11y INTEGER,
+			 s11z INTEGER,
+			 s11  INTEGER,
+			 s12x INTEGER,
+			 s12y INTEGER,
+			 s12z INTEGER,
+			 s12  INTEGER,
+		 	 s13x INTEGER,
+			 s13y INTEGER,
+			 s13z INTEGER,
+			 s13  INTEGER,
+			 s14x INTEGER,
+			 s14y INTEGER,
+			 s14z INTEGER,
+			 s14  INTEGER,
+			 s15x INTEGER,
+			 s15y INTEGER,
+			 s15z INTEGER,
+			 s15  INTEGER
+
                         );
 
     ]]
@@ -46,29 +93,70 @@ end
 
 
 -- Switch CRUD method
-function insertSwitch(hostname, s1, s2, s3, s4, s5)
+function insertSwitch(hostname, s1x, s1y, s1z, s1,   
+				s2x, s2y, s2z, s2,   
+				s3x, s3y, s3z, s3,   
+				s4x, s4y, s4z, s4,   
+				s5x, s5y, s5z, s5)
+
+    print(hostname, s1x, s1y, s1z, s1,
+                                s2x, s2y, s2z, s2,
+                                s3x, s3y, s3z, s3,
+                                s4x, s4y, s4z, s4,
+                                s5x, s5y, s5z, s5)
+
+
     local db = sqlite3.open(databaseName)
     local stmt = db:prepare[[ 	
-				INSERT INTO switch VALUES (null, :hostname,  :s1, :s2, :s3, :s4, :s5, 
-									0, 0, 0, 0, 0, 
-									0, 0, 0, 0, 0) 
+				INSERT INTO switch VALUES (null, :hostname,  	:s1x, :s1y, :s1z, :s1,   
+										:s2x, :s2y, :s2z, :s2,   
+										:s3x, :s3y, :s3z, :s3, 
+										:s4x, :s4y, :s4z, :s4,   
+										:s5x, :s5y, :s5z, :s5,
+									     	0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,  0, 0, 0, 0,
+									     	0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,  0, 0, 0, 0  ) 
 			   ]]
-
-    stmt:bind_names{ hostname = hostname, s1 = s1, s2 = s2, s3 = s3, s4 = s4, s5 = s5 }
+   
+    stmt:bind_names{ hostname = hostname, s1x = s1x, s1y = s1y, s1z = s1z, s1 = s1, 
+					  s2x = s2x, s2y = s2y, s2z = s2z, s2 = s2, 
+					  s3x = s3x, s3y = s3y, s3z = s3z, s3 = s3, 
+					  s4x = s4x, s4y = s4y, s4z = s4z, s4 = s4, 
+					  s5x = s5x, s5y = s5y, s5z = s5z, s5 = s5 }
     stmt:step()
     stmt:finalize()
     db:close()
+    
 end
 
 function selectSwitch(hostname)
     local db = sqlite3.open(databaseName)
     for row in db:nrows("SELECT * FROM switch WHERE hostname = '".. hostname .. "'") do
-      print(row.id, row.hostname, row.s1, row.s2, row.s3, row.s4, row.s5,
-				  row.s6, row.s7, row.s8, row.s9, row.s10,
-				  row.s11, row.s12, row.s13, row.s14, row.s15)
+      print(row.id, row.hostname, row.s1x, row.s1y, row.s1z, row.s1, 
+				  row.s2x, row.s2y, row.s2z, row.s2, 
+                                  row.s3x, row.s3y, row.s3z, row.s3, 
+                                  row.s4x, row.s4y, row.s4z, row.s4, 
+				  row.s5x, row.s5y, row.s5z, row.s5)
     end 
     db:close()
 end
+
+
+function updateSwitch(hostname, s1x, s1y, s1z, s1)
+    local db = sqlite3.open(databaseName)
+    local stmt = db:prepare[[ 	
+				UPDATE switch SET s1 = :s1 WHERE hostname = :hostname AND s1x = 4 AND s1y = 4 AND s1z = 5
+			   ]]
+
+    stmt:bind_names{ hostname = hostname, s1x= s1x, s1y = s1y, s1z = s1z, s1 = s1 }
+    stmt:step()
+    stmt:finalize()
+
+    db:close()
+end
+
+
+
+
 
 
 -- Server CRUD method
@@ -221,17 +309,36 @@ minetest.register_chatcommand("build", {
 			local hostname = structureParam
 
 			insertServer(hostname, "ipv4", "Ipv6", pos.x + 2, pos.y, pos.z)
-			local s1 = 111
-			local s2 = 222
-			local s3 = 333
-			local s4 = 444
-			local s5 = 555
-			insertSwitch(hostname, s1, s2, s3, s4, s5)
+			local s1x = 11
+			local s1y = 12
+			local s1z = 13
+			local s1  = 10
+			local s2x = 21
+			local s2y = 22
+			local s2z = 23
+			local s2  = 20
+			local s3x = 31
+			local s3y = 32
+			local s3z = 33
+			local s3  = 30
+			local s4x = 41
+			local s4y = 42
+			local s4z = 43
+			local s4  = 40
+			local s5x = 51
+			local s5y = 52
+			local s5z = 53
+			local s5  = 50
+			insertSwitch(hostname, 	s1x, s1y, s1z, s1, 
+					       	s2x, s2y, s2z, s2, 
+						s3x, s3y, s3z, s3, 
+						s4x, s4y, s4z, s4, 
+						s5x, s5y, s5z, s5)
 
 			separator()
 			selectServer(hostname)
 			separator()
-			selectSwitch(hostname)
+			--selectSwitch(hostname)
 
 		-- /build sign_yard
 		elseif structureName == "sign_yard" then
