@@ -471,7 +471,7 @@ minetest.register_on_punchnode(function(pos, node, puncher, pointed_thing)
 	if node.name == "default:brick" then
 		local puncher_name = puncher:get_player_name()
 		local mypos = minetest.pos_to_string(pos) -- Sets variable to (X,Y,Z.. where Y is up) 
-		minetest.chat_send_player(puncher_man, puncher_name .." is hitting me. I'm located at ".. mypos)		
+		-- minetest.chat_send_player(puncher_man, puncher_name .." is hitting me. I'm located at ".. mypos)		
 	end 
 	if node.name == "default:desert_stonebrick" then
 		local puncher_name = puncher:get_player_name()
